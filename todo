@@ -1,7 +1,7 @@
 socket calls probably socket(AF_INET, SOCK_STREAM, 0), tcp
 
 // Anthony
-Listening Socket:
+1 Listening Socket:
  -create a socket()
  -at program start bind() a port, if it fails print an error.
  -listen() for requests from clients on that port.
@@ -9,7 +9,7 @@ Listening Socket:
  -call function to handle http request
  -continue listening/accepting
 
-Server Connection:
+2 Server Connection:
  -create a socket()
  -bind() a port to connect to the server
  -connect() with the server
@@ -17,13 +17,15 @@ Server Connection:
  -call function to write log entry
  -return the page to client
 
-Client Connection:
+3 Client Connection:
  -create a socket
  -bind() a port
  -connect() to the client
  -forward the reply to client
 
-Log Entry:
+
+// Whoever has extra time
+4 Log Entry:
  -Format the entry
  -Write it to file
 
