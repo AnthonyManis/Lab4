@@ -6,6 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-
+#include <sys/socket.h>
 
 MAKING A CHANGE FOR THE WORLD!!!
