@@ -1,20 +1,34 @@
-Queue:
--Request queue implemented as singly-linked list.
--Add new requests to back of queue, remove from font.
+socket calls probably socket(AF_INET, SOCK_STREAM, 0), tcp
 
-Connections:
--Listening Socket:
--On program start bind a port, if it fails print an error.
--Listen for requests from clients on that port.
--Queue the requests and call a function that processes them
+// Anthony
+Listening Socket:
+ -create a socket()
+ -at program start bind() a port, if it fails print an error.
+ -listen() for requests from clients on that port.
+ -accept() a request
+ -call function to handle http request
+ -continue listening/accepting
 
-Server Connection
--Get a client request from the queue
--Open a new connection with the server
--Request the page
--Call function to write log entry
--Return the page to client
+Server Connection:
+ -create a socket()
+ -bind() a port to connect to the server
+ -connect() with the server
+ -send http request
+ -call function to write log entry
+ -return the page to client
+
+Client Connection:
+ -create a socket
+ -bind() a port
+ -connect() to the client
+ -forward the reply to client
 
 Log Entry:
--Format the entry
--Write it to file
+ -Format the entry
+ -Write it to file
+
+A QUEUE MAY NOT BE NECESSARY SINCE listen()/accept() already implements a queue
+Queue:
+ -Request queue--implemented as singly-linked list.
+ -Add new requests to back of queue, remove from font.
+ -Must store client IP and requested web address
