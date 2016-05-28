@@ -9,12 +9,22 @@
 #include <sys/socket.h>
 #include "csapp.h"
 
+int parseURL(char *buf, char *host, char *request);
 void listenForConnection(int port);
 
+int parseURL(char *buf, char *host, char *request) {
+
+}
 void listenForConnection(int port) {
-    // Buffer for the http request
+    // Buffer for the client request
     int buf_len = 1024;
     char buf[buf_len];
+    // Buffers for the host and request parts
+    char host[buf_len];
+    char request[buf_len];
+    // Buffer for the server response.
+    int response_len = 4096;
+    char response[response_len];
 
     // Socketaddr and length
     struct sockaddr *addr;
@@ -25,11 +35,26 @@ void listenForConnection(int port) {
     // Listen for client connections
     for(;;) {
         // When a client sends a request
-        int ac = Accept(socketfd, addr, addrlen);
+        int clientfd = Accept(socketfd, addr, addrlen);
         // Zero the buffer and read into it.
-        b0(buf, buf_len);
-        Rio_readn(socketfd, buf, buf_len - 1);
+        bzero(&buf, buf_len);
+        Rio_readn(clientfd, &buf, buf_len - 1);
 
+        // Get the host and request parts
+        if (parseURL(buf, host, request) == -1) {
+            printf("Error parsing URL.\n");
+            continue;
+        }
+
+        // Opening connection to end-server
+        int serverfd = Open_clientfd(&host, "80");
+
+        // Sending the request to the end-server
+        Rio_writen(serverfd, &request, sizeof(&request));
+
+        // Reading the end-server's response
+        bzero(&response, response_len);
+        Rio_readn(serverfd, &response, response_len - 1);
 
     }
 }
