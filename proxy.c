@@ -8,4 +8,14 @@
 #include <stdbool.h>
 #include <sys/socket.h>
 
-MAKING A CHANGE FOR THE WORLD!!!
+void listenForConnection(int port);
+void listenForConnection(int port) {
+    
+}
+
+int main(int argc, char** argv) {
+    if (argc < 2)
+        printf("Port number required.\n")
+    int portNumber = atoi(argv[1]);
+    listenForConnection(portNumber);
+}
