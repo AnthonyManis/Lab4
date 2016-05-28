@@ -32,7 +32,10 @@
 5 parseURL
  -Find host part
  -find request part
- - put the GET /~... part into the request part
+ -format the request part
+ -the request part should look like below:
+GET /~harris/test.html HTTP/1.1
+host: www.ics.uci.edu\n\n
 
 
 A QUEUE MAY NOT BE NECESSARY SINCE listen()/accept() already implements a queue
