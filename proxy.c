@@ -12,10 +12,21 @@
 void listenForConnection(int port);
 
 void listenForConnection(int port) {
+    // Buffer for the http request
+    char request[1024];
+
+    // Socketaddr and length
+    struct sockaddr *addr;
+    socklen_t *addrlen;
+    int socketfd = Open_listenfd(port);
 
     // Listen for client connections
-    Open_listenfd(port);
-    
+    for(;;) {
+        // When a client sends a request
+        Accept(socketfd, addr, addrlen);
+
+
+    }
 }
 
 int main(int argc, char** argv) {
