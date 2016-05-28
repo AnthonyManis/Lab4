@@ -10,12 +10,12 @@
 #include "csapp.h"
 
 int parseURL(char *buf, char *host, char *request);
-void listenForConnection(int port);
+void listenForConnection(char *port);
 
 int parseURL(char *buf, char *host, char *request) {
 
 }
-void listenForConnection(int port) {
+void listenForConnection(char *port) {
     // Buffer for the client request
     int buf_len = 1024;
     char buf[buf_len];
@@ -37,31 +37,35 @@ void listenForConnection(int port) {
         // When a client sends a request
         int clientfd = Accept(socketfd, addr, addrlen);
         // Zero the buffer and read into it.
-        bzero(&buf, buf_len);
+        bzero(buf, buf_len);
         Rio_readn(clientfd, &buf, buf_len - 1);
 
         // Get the host and request parts
-        if (parseURL(buf, host, request) == -1) {
-            printf("Error parsing URL.\n");
-            continue;
-        }
+        parseURL(buf, host, request);
 
         // Opening connection to end-server
-        int serverfd = Open_clientfd(&host, "80");
+        int serverfd = Open_clientfd(host, "80");
 
         // Sending the request to the end-server
-        Rio_writen(serverfd, &request, sizeof(&request));
+        Rio_writen(serverfd, request, sizeof(request));
 
         // Reading the end-server's response
         bzero(&response, response_len);
-        Rio_readn(serverfd, &response, response_len - 1);
+        Rio_readn(serverfd, response, response_len - 1);
 
+        // Close end-server connection
+        Close(serverfd);
+
+        // Send response to client
+        Rio_writen(clientfd, response, sizeof(response));
+
+        // Close
+        Close(clientfd);
     }
 }
 
 int main(int argc, char** argv) {
     if (argc < 2)
-        printf("Port number required.\n")
-    int portNumber = atoi(argv[1]);
-    listenForConnection(portNumber);
+        printf("Port number required.\n");
+    listenForConnection(argv[1]);
 }
