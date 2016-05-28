@@ -1,4 +1,5 @@
 socket calls probably socket(AF_INET, SOCK_STREAM, 0), tcp
+gethostbyname() will convert url to ip
 
 // Anthony
 1 Listening Socket:
