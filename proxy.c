@@ -7,9 +7,14 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sys/socket.h>
+#include "csapp.h"
 
 void listenForConnection(int port);
+
 void listenForConnection(int port) {
+
+    // Listen for client connections
+    Open_listenfd(port);
     
 }
 
