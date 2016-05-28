@@ -13,17 +13,22 @@ void listenForConnection(int port);
 
 void listenForConnection(int port) {
     // Buffer for the http request
-    char request[1024];
+    int buf_len = 1024;
+    char buf[buf_len];
 
     // Socketaddr and length
     struct sockaddr *addr;
     socklen_t *addrlen;
+    // Socket file descriptor
     int socketfd = Open_listenfd(port);
 
     // Listen for client connections
     for(;;) {
         // When a client sends a request
-        Accept(socketfd, addr, addrlen);
+        int ac = Accept(socketfd, addr, addrlen);
+        // Zero the buffer and read into it.
+        b0(buf, buf_len);
+        Rio_readn(socketfd, buf, buf_len - 1);
 
 
     }
