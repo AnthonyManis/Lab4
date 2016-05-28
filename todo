@@ -1,7 +1,4 @@
-socket calls probably socket(AF_INET, SOCK_STREAM, 0), tcp
-gethostbyname() will convert url to ip
-
-// Anthony
+// DONE
 1 Listening Socket:
  -create a socket()
  -at program start bind() a port, if it fails print an error.
@@ -10,6 +7,7 @@ gethostbyname() will convert url to ip
  -call function to handle http request
  -continue listening/accepting
 
+// DONE
 2 Server Connection:
  -create a socket()
  -bind() a port to connect to the server
@@ -18,6 +16,7 @@ gethostbyname() will convert url to ip
  -call function to write log entry
  -return the page to client
 
+// DONE
 3 Client Connection:
  -create a socket
  -bind() a port
@@ -29,6 +28,12 @@ gethostbyname() will convert url to ip
 4 Log Entry:
  -Format the entry
  -Write it to file
+
+5 parseURL
+ -Find host part
+ -find request part
+ - put the GET /~... part into the request part
+
 
 A QUEUE MAY NOT BE NECESSARY SINCE listen()/accept() already implements a queue
 Queue:
