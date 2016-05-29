@@ -14,7 +14,27 @@ void listenForConnection(char *port);
 
 int parseURL(char *buf, char *host, char *request) {
 
+    char * token;
+    char temp[1024];
+    token = strtok(buf, "/");
+    token = strtok(NULL, "/");
+    char * str1 = token;
+
+    if ((token = strtok(NULL, "")) == NULL)
+        token = "/";
+    char * str2 = token;
+
+    strcpy(temp, "GET ");
+    strcat(temp, str2);
+    strcat(temp, " HTTP/1.1\nhost: ");
+    strcat(temp, str1);
+    strcat(temp, "\n\n");
+
+    strcpy(host, str1);
+    strcpy(request, temp);
+
 }
+
 void listenForConnection(char *port) {
     // Buffer for the client request
     int buf_len = 1024;
