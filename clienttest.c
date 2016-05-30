@@ -8,32 +8,55 @@
 #include <netdb.h>
 #include "csapp.h"
 
-char * clienttest(char *host, char *request) {
-    int clientfd, buf_size = 256, result_size = 8192;
-    char *port = "80";
+bool strmatch(char *buf, char *pattern) {
+    int patternlen = strlen(pattern);
+    return !strcmp(buf - patternlen, pattern);
+}
+
+char *read_until(int fd, char *pattern) {
+    int buf_size = 2, result_size = 8192;
     char buf[buf_size];
     char *result = malloc(result_size);
-    rio_t rio;
 
-    clientfd = Open_clientfd(host, port);
-    Rio_readinitb(&rio, clientfd);
-
-    Rio_writen(clientfd, request, strlen(request));
     int rc;
-    int used = 1;
+    int next = 0;
     bzero(result, result_size);
-    while ( used < result_size ) {
+    while ( next < result_size - 1) {
         bzero(buf, buf_size);
-        rc = Rio_readn(clientfd, buf, buf_size - 1);
-        if ( rc <= 0 )
-            break;
-        strncat(result, buf, result_size - used);
-        used += rc;
-        // Fputs(buf, stdout);
+        rc = Rio_readn(fd, buf, buf_size - 1);
+        if (rc > 0) {
+            strncat(result, buf, result_size - next - 1);
+            next += rc;
+            if ( next >= strlen(pattern) && strmatch(result+next, pattern) )
+                break;
+        }
+        
     }
+    return result;
+}
+
+char * clienttest(char *host, char *request) {
+    int clientfd;
+    char *port = "80";
+    char *result;
+
+    // Opens the socket and sets it up
+    clientfd = Open_clientfd(host, port);
+
+    // Writes an http request to end-server
+    Rio_writen(clientfd, request, strlen(request));
+
+    // Reads from end-server until it gets a whole http request
+    result = read_until(clientfd, "</html>\0");
+    Fputs(result, stdout);
+
+    // Free the buffer created by read_until
+    free(result);
+    // Close the connection and return the end-server's response
     Close(clientfd);
     return result;
 }
+
 
 int main(int argc, char **argv) {
     char host[50] = "www.ics.uci.edu";
