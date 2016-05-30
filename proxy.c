@@ -13,35 +13,48 @@
 #include "csapp.h"
 
 int parseURL(char *buf, char *host, char *request);
-char * clienttest(char *host, char *request);
+char *read_all(int fd);
+char *read_whole_http_request(int fd);
+char *clienttest(char *host, char *request);
+void servertest(char *port);
 
 int parseURL(char *buf, char *host, char *request) {
 
 }
 
-char * clienttest(char *host, char *request) {
-    int clientfd, buf_size = 2, result_size = 8192;
-    char *port = "80";
+char *read_all(int fd) {
+    int buf_size = 2, result_size = 8192;
     char buf[buf_size];
     char *result = malloc(result_size);
-    rio_t rio;
 
-    clientfd = Open_clientfd(host, port);
-    Rio_readinitb(&rio, clientfd);
-
-    Rio_writen(clientfd, request, strlen(request));
     int rc;
     int used = 1;
     bzero(result, result_size);
-    while ( used < result_size ) {
+    while ( used < result_size - 1) {
         bzero(buf, buf_size);
-        rc = Rio_readn(clientfd, buf, buf_size - 1);
+        rc = Rio_readn(fd, buf, buf_size - 1);
         if ( rc <= 0 )
             break;
-        strncat(result, buf, result_size - used);
+        strncat(result, buf, result_size - used - 1);
         used += rc;
         Fputs(buf, stdout);
     }
+    return result;
+}
+
+
+
+char * clienttest(char *host, char *request) {
+    int clientfd;
+    char *port = "80";
+    char *result;
+
+    clientfd = Open_clientfd(host, port);
+
+    Rio_writen(clientfd, request, strlen(request));
+
+    result = read_all(clientfd);
+
     Close(clientfd);
     return result;
 }
