@@ -12,13 +12,13 @@
 #include <netdb.h>
 #include "csapp.h"
 
-int parseURL(char *buf, char *host, char *request);
+int parseRequest(char *buf, char *host);
 char *read_until(int fd, char *pattern);
 bool strmatch(char *buf, char *pattern);
 char *clienttest(char *host, char *request);
 void servertest(char *port);
 
-int parseURL(char *buf, char *host, char *request) {
+int parseRequest(char *buf, char *host) {
 
 }
 

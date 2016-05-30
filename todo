@@ -1,53 +1,16 @@
-compile with
-gcc proxy.c csapp.c -lpthread -o executable-name
+example compile and run
+gcc proxy.c csapp.c -lpthread -o proxy
+./proxy 2000
 
+TODO:
+parseRequest(char *buf, char *host);
+// parseRequest takes an http request and parses it to find
+// a hostname. It allocates space for *host
 
+// Example
+// For the input:
 
+// GET /~harris/test.html HTTP/1.1
+// host: www.ics.uci.edu
 
-
-
-// DONE
-1 Listening Socket:
- -create a socket()
- -at program start bind() a port, if it fails print an error.
- -listen() for requests from clients on that port.
- -accept() a request
- -call function to handle http request
- -continue listening/accepting
-
-// DONE
-2 Server Connection:
- -create a socket()
- -bind() a port to connect to the server
- -connect() with the server
- -send http request
- -call function to write log entry
- -return the page to client
-
-// DONE
-3 Client Connection:
- -create a socket
- -bind() a port
- -connect() to the client
- -forward the reply to client
-
-
-// Whoever has extra time
-4 Log Entry:
- -Format the entry
- -Write it to file
-
-5 parseURL
- -Find host part
- -find request part
- -format the request part
- -the request part should look like below:
-GET /~harris/test.html HTTP/1.1
-host: www.ics.uci.edu\n\n
-
-
-A QUEUE MAY NOT BE NECESSARY SINCE listen()/accept() already implements a queue
-Queue:
- -Request queue--implemented as singly-linked list.
- -Add new requests to back of queue, remove from font.
- -Must store client IP and requested web address
+// Store "www.ics.uci.edu\0" in *host
