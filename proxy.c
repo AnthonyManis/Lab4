@@ -20,7 +20,7 @@ int parseURL(char *buf, char *host, char *request) {
 }
 
 char * clienttest(char *host, char *request) {
-    int clientfd, buf_size = 256, result_size = 8192;
+    int clientfd, buf_size = 2, result_size = 8192;
     char *port = "80";
     char buf[buf_size];
     char *result = malloc(result_size);
