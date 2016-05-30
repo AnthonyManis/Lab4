@@ -1,3 +1,11 @@
+compile with
+gcc proxy.c csapp.c -lpthread -o executable-name
+
+
+
+
+
+
 // DONE
 1 Listening Socket:
  -create a socket()
