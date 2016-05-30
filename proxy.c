@@ -15,6 +15,7 @@
 int parseURL(char *buf, char *host, char *request);
 char *read_all(int fd);
 char *read_whole_http_request(int fd);
+bool nlnl(char *buf);
 char *clienttest(char *host, char *request);
 void servertest(char *port);
 
