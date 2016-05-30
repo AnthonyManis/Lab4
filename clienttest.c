@@ -1,7 +1,3 @@
-// Manis, Anthony: 71461439
-// Mukesh, Kastala: 40646351
-// Cockins, Ryan: 92859394
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -11,13 +7,6 @@
 #include <unistd.h>
 #include <netdb.h>
 #include "csapp.h"
-
-int parseURL(char *buf, char *host, char *request);
-char * clienttest(char *host, char *request);
-
-int parseURL(char *buf, char *host, char *request) {
-
-}
 
 char * clienttest(char *host, char *request) {
     int clientfd, buf_size = 256, result_size = 8192;
@@ -40,17 +29,13 @@ char * clienttest(char *host, char *request) {
             break;
         strncat(result, buf, result_size - used);
         used += rc;
-        Fputs(buf, stdout);
+        // Fputs(buf, stdout);
     }
     Close(clientfd);
     return result;
 }
 
-int main(int argc, char** argv) {
-    if (argc < 2) {
-        printf("Port number required.\n");
-        exit(0);
-    }
+int main(int argc, char **argv) {
     char host[50] = "www.ics.uci.edu";
     char request[500] = "GET /~harris/test.html HTTP/1.1\nhost: www.ics.uci.edu\n\n";
     // char host[50] = "www.yahoo.com";
