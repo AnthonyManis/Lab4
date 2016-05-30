@@ -12,6 +12,7 @@
 #include <netdb.h>
 #include "csapp.h"
 
+void writeLogEntry(char *browserIP, char *URL, int size);
 int parseRequest(char *buf, char *host);
 char *read_until(int fd, char *pattern);
 bool strmatch(char *buf, char *pattern);
@@ -64,8 +65,6 @@ char * clienttest(char *host, char *request) {
     result = read_until(clientfd, "</html>\0");
     Fputs(result, stdout);
 
-    // Free the buffer created by read_until
-    free(result);
     // Close the connection and return the end-server's response
     Close(clientfd);
     return result;

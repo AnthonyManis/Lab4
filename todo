@@ -2,6 +2,14 @@ example compile and run
 gcc proxy.c csapp.c -lpthread -o proxy
 ./proxy 2000
 
+running the servertest
+gcc servertest.c csapp.c -lpthread -o server
+./server 2000&
+telnet 127.0.0.1 2000
+
+type some stuff then exit the telnet connection by typing <enter><enter>
+after you have to use ps and kill to shut down the server which is still running in bg
+
 TODO:
 parseRequest(char *buf, char *host);
 // parseRequest takes an http request and parses it to find
@@ -14,3 +22,27 @@ parseRequest(char *buf, char *host);
 // host: www.ics.uci.edu
 
 // Store "www.ics.uci.edu\0" in *host
+
+
+---------------------------------------------------------------------
+writeLogEntry(char *browserIP, char *URL, int size)
+// writeLogEntry takes its arguments and creates a formatted string
+// Then it appends it to a file called "proxy.log"
+// Make sure to open the file in "a" mode so it doesn't overwrite anything
+
+// The format for the string is
+// Date: browserIP URL size
+
+// Example:
+// Sun 27 Oct 2002 02:51:02 EST: 128.2.111.38 http://www.cs.cmu.edu/ 34314
+
+---------------------------------------------------------------------
+Stitch together the clienttest + servertest functions
+Server test runs in an infinite loop, and will call clienttest.
+Basic flow:
+1. server starts and enters listening loop
+2. server accepts a connection and reads the request from the end-user
+3. server calls clienttest with the request
+4. client is already complete, it returns the end-server's response
+5. server checks if it got a response, if so it calls writeLogEntry
+6. server sends the response back to the user
