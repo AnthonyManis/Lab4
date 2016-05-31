@@ -44,5 +44,7 @@ Basic flow:
 2. server accepts a connection and reads the request from the end-user
 3. server calls clienttest with the request
 4. client is already complete, it returns the end-server's response
-5. server checks if it got a response, if so it calls writeLogEntry
+    5. server checks if it got a response, if so it calls writeLogEntry
 6. server sends the response back to the user
+
+Still need to do #5, contingent on parseRequest. writeLogEntry can wait until last

@@ -55,51 +55,53 @@ char * clienttest(char *host, char *request) {
     char *port = "80";
     char *result;
 
-    // Opens the socket and sets it up
+    // Open the socket and set it up
     clientfd = Open_clientfd(host, port);
-
-    // Writes an http request to end-server
+    // Write an http request to end-server
     Rio_writen(clientfd, request, strlen(request));
-
-    // Reads from end-server until it gets a whole http request
+    // Read response from end-server until ending html tag encountered
     result = read_until(clientfd, "</html>\0");
-    Fputs(result, stdout);
-
+    // Fputs(result, stdout);
     // Close the connection and return the end-server's response
     Close(clientfd);
     return result;
 }
 
 void servertest(char *port) {
-    char *buf, *host, *request, *response, *haddrp;
+    char *request, *hostname, *response, *client_ip_address;
     struct sockaddr_in clientaddr;
     struct hostent *hp;
     int clientlen, connfd;
+
+    // start listening and enter infinite listening loop
     int listenfd = Open_listenfd(port);
-
-    // Server runs indefinitely
     while (1) {
-
-        // Accept the connection of the client
+        // accept a connection
         clientlen = sizeof(clientaddr);
         connfd = Accept(listenfd, (SA *)&clientaddr, &clientlen);
-
-        // Get some information from the client
+        // get some information from the client
         hp = Gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr,
             sizeof(clientaddr.sin_addr.s_addr), AF_INET);
-        haddrp = inet_ntoa(clientaddr.sin_addr);
-
-        // Read from the client until two endlines are reached
-        buf = read_until(connfd, "\r\n\r\n\0");
-        Fputs(buf, stdout);
-
+        client_ip_address = inet_ntoa(clientaddr.sin_addr);
+        // read the request from the end-user
+        request = read_until(connfd, "\r\n\r\n\0");
+        // Store the hostname from the request
+        parseRequest(request, hostname);
+        // Fputs(request, stdout);
         // Pass on the client's request
-        // stuff
+        response = clienttest(hostname, request);
+        //check that the response isn't empty (end-server responded)
 
-        // Free the buffer created by read_until
-        free(buf);
-
+        // respond to the end-user
+        Rio_writen(connfd, response, strlen(response));
+        // Finished, close connection & write log entry.
         Close(connfd);
+        // writeLogEntry(client_ip_address, hostname, response);
+        // Free the buffers except
+        // client_ip_address is statically managed by inet_ntoa
+        free(request);
+        free(hostname);
+        free(response);
     }
 }
 
@@ -108,9 +110,11 @@ int main(int argc, char** argv) {
         printf("Port number required.\n");
         exit(0);
     }
-    char host[50] = "www.ics.uci.edu";
-    char request[500] = "GET /~harris/test.html HTTP/1.1\nhost: www.ics.uci.edu\n\n";
+    // char host[50] = "www.ics.uci.edu";
+    // char request[500] = "GET /~harris/test.html HTTP/1.1\nhost: www.ics.uci.edu\n\n";
     // char host[50] = "www.yahoo.com";
     // char request[500] = "GET / HTTP/1.1\nhost: www.yahoo.com\n\n";
-    clienttest(host, request);
+    // clienttest(host, request);
+    servertest(argv[1]);
+    return 0;
 }
