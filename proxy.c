@@ -19,6 +19,11 @@ bool strmatch(char *buf, char *pattern);
 char *clienttest(char *host, char *request);
 void servertest(char *port);
 
+void writeLogEntry(char *browserIP, char *URL, int size) {
+
+}
+
+
 int parseRequest(char *buf, char *host) {
     
     int len = 0;
@@ -34,7 +39,7 @@ int parseRequest(char *buf, char *host) {
 
     host = (char *) malloc(len);
     while(pos)
-        host++ = pos++;
+        *(host++) = *(pos++);
 
     return 1;
     
@@ -103,17 +108,21 @@ void servertest(char *port) {
         // read the request from the end-user
         request = read_until(connfd, "\r\n\r\n\0");
         // Store the hostname from the request
-        parseRequest(request, hostname);
-        // Fputs(request, stdout);
-        // Pass on the client's request
-        response = clienttest(hostname, request);
-        //check that the response isn't empty (end-server responded)
+         if (parseRequest(request, hostname) == 1) {
+            // Fputs(request, stdout);
+            // Pass on the client's request
+            response = clienttest(hostname, request);
+            //check that the response isn't empty (end-server responded)
 
-        // respond to the end-user
-        Rio_writen(connfd, response, strlen(response));
-        // Finished, close connection & write log entry.
+            // respond to the end-user
+            Rio_writen(connfd, response, strlen(response));
+            // writeLogEntry (only if there was a response)
+            if (strcmp(response, "") != 0) {
+               writeLogEntry(client_ip_address, hostname, response);
+            }
+        }
+        // Finished, close connection
         Close(connfd);
-        // writeLogEntry(client_ip_address, hostname, response);
         // Free the buffers except
         // client_ip_address is statically managed by inet_ntoa
         free(request);
