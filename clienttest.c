@@ -8,6 +8,24 @@
 #include <netdb.h>
 #include "csapp.h"
 
+char *parseRequest(char *buf) {
+    char* pos = strstr(buf, "www.");
+    // printf("%s", pos);
+
+    if (!pos)
+        return NULL;
+
+    int len = strlen(pos);
+    char *host;
+    host = (char *) malloc(len);
+    bzero(host, len);
+    strncpy(host, pos, len - 2);
+    // printf("%s", host);
+
+    return host;
+    
+}
+
 bool strmatch(char *buf, char *pattern) {
     int patternlen = strlen(pattern);
     return !strcmp(buf - patternlen, pattern);
@@ -40,27 +58,24 @@ char * clienttest(char *host, char *request) {
     char *port = "80";
     char *result;
 
-    // Opens the socket and sets it up
+    // Open the socket and set it up
     clientfd = Open_clientfd(host, port);
-
-    // Writes an http request to end-server
+    // Write an http request to end-server
     Rio_writen(clientfd, request, strlen(request));
-
-    // Reads from end-server until it gets a whole http request
+    // Read response from end-server until ending html tag encountered
     result = read_until(clientfd, "</html>\0");
-    Fputs(result, stdout);
-
-    // Free the buffer created by read_until
-    free(result);
     // Close the connection and return the end-server's response
+    Fputs(result, stdout);
     Close(clientfd);
     return result;
 }
 
 
 int main(int argc, char **argv) {
-    char host[50] = "www.ics.uci.edu";
-    char request[500] = "GET /~harris/test.html HTTP/1.1\nhost: www.ics.uci.edu\n\n";
+    // char host[50] = "www.ics.uci.edu";
+    char *host;
+    char request[500] = "GET /~harris/test.html HTTP/1.1\nhost: www.ics.uci.edu\r\n\r\n";
+    host = parseRequest(request);
     // char host[50] = "www.yahoo.com";
     // char request[500] = "GET / HTTP/1.1\nhost: www.yahoo.com\n\n";
     clienttest(host, request);

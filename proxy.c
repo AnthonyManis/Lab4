@@ -10,38 +10,56 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <time.h>
 #include "csapp.h"
 
 void writeLogEntry(char *browserIP, char *URL, int size);
-int parseRequest(char *buf, char *host);
+char *parseRequest(char *buf);
 char *read_until(int fd, char *pattern);
 bool strmatch(char *buf, char *pattern);
 char *clienttest(char *host, char *request);
 void servertest(char *port);
 
 void writeLogEntry(char *browserIP, char *URL, int size) {
+    time_t now = time( NULL );
+    struct tm *lcltime = localtime ( &now );
 
+    const char* daynames[] = {"Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"};
+    const char* monthnames[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"};
+
+    FILE *outFile;
+    outFile = fopen("proxy.log", "a");
+    fprintf(outFile, "%s %d %s %d %d:%d:%d PST: %s %s %d",
+        daynames[lcltime->tm_wday],
+        lcltime->tm_mday,
+        monthnames[lcltime->tm_mon],
+        lcltime->tm_year + 1900,
+        lcltime->tm_hour,
+        lcltime->tm_min,
+        lcltime->tm_sec,
+        browserIP,
+        URL,
+        size);
+    fclose(outFile);
 }
 
 
-int parseRequest(char *buf, char *host) {
-    
-    int len = 0;
-    char* pos = strstr(buf, "www.");
+char *parseRequest(char *buf) {
+    char* pos = strstr(buf, "host: ");
+    pos += 6;
+    // printf("%s", pos);
+
     if (!pos)
-        return -1;
-    char *temp = pos;
-    while (temp)
-    {
-        ++len;
-        ++temp;
-    }
+        return NULL;
 
+    int len = strlen(pos);
+    char *host;
     host = (char *) malloc(len);
-    while(pos)
-        *(host++) = *(pos++);
+    bzero(host, len);
+    strncpy(host, pos, len - 4);
+    // printf("%s", host);
 
-    return 1;
+    return host;
     
 }
 
@@ -49,6 +67,8 @@ char *read_until(int fd, char *pattern) {
     int buf_size = 2, result_size = 8192;
     char buf[buf_size];
     char *result = malloc(result_size);
+
+    // printf("S-read_until:\n");
 
     int rc;
     int next = 0;
@@ -59,11 +79,12 @@ char *read_until(int fd, char *pattern) {
         if (rc > 0) {
             strncat(result, buf, result_size - next - 1);
             next += rc;
-            if ( next >= strlen(pattern) && strmatch(result+next, pattern) )
+            if ( next >= strlen(pattern) && strmatch(result+next, pattern) ) {
                 break;
+            }
         }
-        
     }
+    // printf("S-read_until returns\n");
     return result;
 }
 
@@ -83,8 +104,8 @@ char * clienttest(char *host, char *request) {
     Rio_writen(clientfd, request, strlen(request));
     // Read response from end-server until ending html tag encountered
     result = read_until(clientfd, "</html>\0");
-    // Fputs(result, stdout);
     // Close the connection and return the end-server's response
+    // Fputs(result, stdout);
     Close(clientfd);
     return result;
 }
@@ -108,17 +129,20 @@ void servertest(char *port) {
         // read the request from the end-user
         request = read_until(connfd, "\r\n\r\n\0");
         // Store the hostname from the request
-         if (parseRequest(request, hostname) == 1) {
-            // Fputs(request, stdout);
+        hostname = parseRequest(request);
+        // printf("S-Parse result:%s", hostname);
+        if (hostname) {
             // Pass on the client's request
             response = clienttest(hostname, request);
+            // printf("S-Response result:\n%s\n", response);
             //check that the response isn't empty (end-server responded)
 
             // respond to the end-user
             Rio_writen(connfd, response, strlen(response));
             // writeLogEntry (only if there was a response)
             if (strcmp(response, "") != 0) {
-               writeLogEntry(client_ip_address, hostname, response);
+               writeLogEntry(client_ip_address, hostname, strlen(response));
+               // printf("S-Wrote log.\n");
             }
         }
         // Finished, close connection

@@ -46,4 +46,3 @@ Basic flow:
 4. client is already complete, it returns the end-server's response
 5. server checks if it got a response, if so it calls writeLogEntry
 6. server sends the response back to the user
-
