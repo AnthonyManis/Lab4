@@ -20,7 +20,24 @@ char *clienttest(char *host, char *request);
 void servertest(char *port);
 
 int parseRequest(char *buf, char *host) {
+    
+    int len = 0;
+    char* pos = strstr(buf, "www.");
+    if (!pos)
+        return -1;
+    char *temp = pos;
+    while (temp)
+    {
+        ++len;
+        ++temp;
+    }
 
+    host = (char *) malloc(len);
+    while(pos)
+        host++ = pos++;
+
+    return 1;
+    
 }
 
 char *read_until(int fd, char *pattern) {
